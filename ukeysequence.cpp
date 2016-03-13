@@ -7,138 +7,124 @@ UKeySequence::UKeySequence(QObject *parent)
 {
 }
 
-UKeySequence::UKeySequence(const QString& str, QObject *parent)
+UKeySequence::UKeySequence(const QString &str, QObject *parent)
     : QObject(parent)
 {
-    FromString(str);
+    fromString(str);
 }
 
-bool IsModifier(int key) {
-    return (key == Qt::Key_Shift ||
-            key == Qt::Key_Control ||
-            key == Qt::Key_Alt ||
-            key == Qt::Key_Meta);
-}
-
-static QString KeyToStr(int key) {
-    if (key == Qt::Key_Shift) {
-        return "Shift";
-    }
-    if (key == Qt::Key_Control) {
-        return "Ctrl";
-    }
-    if (key == Qt::Key_Alt) {
-        return "Alt";
-    }
-    if (key == Qt::Key_Meta) {
-        return "Meta";
-    }
-    QKeySequence seq(key);
-    return seq.toString();
-}
-
-void UKeySequence::FromString(const QString& str) {
+void UKeySequence::fromString(const QString &str)
+{
     QStringList keys = str.split('+');
     for (int i = 0; i < keys.size(); i++) {
-        AddKey(keys[i]);
+        addKey(keys[i]);
     }
 }
 
-QString UKeySequence::ToString() {
-    QVector<int> simpleKeys = GetSimpleKeys();
-    QVector<int> modifiers = GetModifiers();
+QString UKeySequence::toString()
+{
+    QVector<Qt::Key> simpleKeys = getSimpleKeys();
+    QVector<Qt::Key> modifiers = getModifiers();
     QStringList result;
     for (int i = 0; i < modifiers.size(); i++) {
-        result.push_back(KeyToStr(modifiers[i]));
+        result.push_back(keyToStr(modifiers[i]));
     }
     for (int i = 0; i < simpleKeys.size(); i++) {
-        result.push_back(KeyToStr(simpleKeys[i]));
+        result.push_back(keyToStr(simpleKeys[i]));
     }
     return result.join('+');
 }
 
-QVector<int> UKeySequence::GetSimpleKeys() const {
-    QVector<int> result;
-    for (int i = 0; i < Keys.size(); i++) {
-        if (!IsModifier(Keys[i])) {
-            result.push_back(Keys[i]);
+QVector<Qt::Key> UKeySequence::getSimpleKeys() const
+{
+    QVector<Qt::Key> result;
+    for (int i = 0; i < mKeys.size(); i++) {
+        if (!isModifier(mKeys[i])) {
+            result.push_back(mKeys[i]);
         }
     }
     return result;
 }
 
-QVector<int> UKeySequence::GetModifiers() const {
-    QVector<int> result;
-    for (int i = 0; i < Keys.size(); i++) {
-        if (IsModifier(Keys[i])) {
-            result.push_back(Keys[i]);
+QVector<Qt::Key> UKeySequence::getModifiers() const
+{
+    QVector<Qt::Key> result;
+    for (int i = 0; i < mKeys.size(); i++) {
+        if (isModifier(mKeys[i])) {
+            result.push_back(mKeys[i]);
         }
     }
     return result;
 }
 
-void UKeySequence::AddModifiers(Qt::KeyboardModifiers mod) {
+void UKeySequence::addModifiers(Qt::KeyboardModifiers mod)
+{
     if (mod == Qt::NoModifier) {
         return;
     }
     if (mod & Qt::ShiftModifier) {
-        AddKey(Qt::Key_Shift);
+        addKey(Qt::Key_Shift);
     }
     if (mod & Qt::ControlModifier) {
-        AddKey(Qt::Key_Control);
+        addKey(Qt::Key_Control);
     }
     if (mod & Qt::AltModifier) {
-        AddKey(Qt::Key_Alt);
+        addKey(Qt::Key_Alt);
     }
     if (mod & Qt::MetaModifier) {
-        AddKey(Qt::Key_Meta);
+        addKey(Qt::Key_Meta);
     }
 }
 
-void UKeySequence::AddKey(const QString& key) {
+void UKeySequence::addKey(const QString &key)
+{
     if (key.contains("+") || key.contains(",")) {
-        throw UException("Wrong key");
+        qWarning() << "Wrong key";
+        return;
     }
 
     QString mod = key.toLower();
     qDebug() << "mod: " << mod;
     if (mod == "alt") {
-        AddKey(Qt::Key_Alt);
+        addKey(Qt::Key_Alt);
         return;
     }
     if (mod == "shift" || mod == "shft") {
-        AddKey(Qt::Key_Shift);
+        addKey(Qt::Key_Shift);
         return;
     }
     if (mod == "control" || mod == "ctrl") {
-        AddKey(Qt::Key_Control);
+        addKey(Qt::Key_Control);
         return;
     }
     if (mod == "win" || mod == "meta") {
-        AddKey(Qt::Key_Meta);
+        addKey(Qt::Key_Meta);
         return;
     }
     QKeySequence seq(key);
     if (seq.count() != 1) {
-        throw UException("Wrong key");
+        qWarning() << "Wrong key";
+        return;
     }
-    AddKey(seq[0]);
+    addKey((Qt::Key) seq[0]);
 }
 
-void UKeySequence::AddKey(int key) {
+void UKeySequence::addKey(Qt::Key key)
+{
     if (key <= 0) {
         return;
     }
-    for (int i = 0; i < Keys.size(); i++) {
-        if (Keys[i] == key) {
+    for (int i = 0; i < mKeys.size(); i++) {
+        if (mKeys[i] == key) {
             return;
         }
     }
     qDebug() << "Key added: " << key;
-    Keys.push_back(key);
+    mKeys.push_back(key);
 }
 
-void UKeySequence::AddKey(const QKeyEvent* event) {
-    AddKey(event->key());
-    AddModifiers(event->modifiers());
+void UKeySequence::addKey(const QKeyEvent *event)
+{
+    addKey((Qt::Key) event->key());
+    addModifiers(event->modifiers());
 }

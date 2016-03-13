@@ -1,10 +1,11 @@
 INCLUDEPATH += $$PWD/
 
-QT += gui-private
+linux {
+    QT += gui-private
+}
 
 SOURCES += \
     $$PWD/ukeysequence.cpp \
-    $$PWD/uglobalhotkeys.cpp \
-    $$PWD/uexception.cpp
+    $$PWD/uglobalhotkeys.cpp
 
 
