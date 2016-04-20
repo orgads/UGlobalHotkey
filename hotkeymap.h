@@ -153,7 +153,7 @@ inline UKeyData QtKeyToLinux(const UKeySequence &keySeq)
     } else if (data.key >= Qt::Key_Space && data.key <= Qt::Key_QuoteLeft) {
         // conversion is not necessary, if the value in the range Qt::Key_Space - Qt::Key_QuoteLeft
     } else {
-        qWarning() << "Invalid hotkey: key conversion is not defined");
+        qWarning() << "Invalid hotkey: key conversion is not defined";
         return data;
     }
 

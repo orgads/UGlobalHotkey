@@ -140,7 +140,7 @@ void UGlobalHotkeys::unregisterAllHotkeys()
 UGlobalHotkeys::~UGlobalHotkeys()
 {
 #if defined(Q_OS_WIN)
-    for (QSet<size_t>::iterator i = Registered.begin(); i != Registered.end(); i++) {
+    for (QSet<size_t>::iterator i = Registered.begin(); i != Registered.end(); ++i) {
         UnregisterHotKey((HWND)winId(), *i);
     }
 #elif defined(Q_OS_LINUX)
