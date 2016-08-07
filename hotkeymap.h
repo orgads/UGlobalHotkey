@@ -123,7 +123,9 @@ inline size_t QtKeyToWin(Qt::Key key)
     return key;
 }
 #elif defined(Q_OS_LINUX)
+
 #include "ukeysequence.h"
+#include <unordered_map>
 #include "xcb/xcb.h"
 #include "xcb/xcb_keysyms.h"
 #include "X11/keysym.h"
@@ -133,21 +135,44 @@ struct UKeyData {
     int mods;
 };
 
+static std::unordered_map<uint32_t, uint32_t> KEY_MAP = {
+    {Qt::Key_Escape, XK_Escape},
+    {Qt::Key_Tab, XK_Tab},
+    {Qt::Key_Backspace, XK_BackSpace},
+    {Qt::Key_Return, XK_Return},
+    {Qt::Key_Enter, XK_Return},
+    {Qt::Key_Insert, XK_Insert},
+    {Qt::Key_Delete, XK_Delete},
+    {Qt::Key_Pause, XK_Pause},
+    {Qt::Key_Print, XK_Print},
+    {Qt::Key_SysReq, XK_Sys_Req},
+    {Qt::Key_Clear, XK_Clear},
+    {Qt::Key_Home, XK_Home},
+    {Qt::Key_End, XK_End},
+    {Qt::Key_Left, XK_Left},
+    {Qt::Key_Up, XK_Up},
+    {Qt::Key_Right, XK_Right},
+    {Qt::Key_Down, XK_Down},
+    {Qt::Key_PageUp, XK_Page_Up},
+    {Qt::Key_PageDown, XK_Page_Down}
+};
+
 inline UKeyData QtKeyToLinux(const UKeySequence &keySeq)
 {
     UKeyData data = {0, 0};
 
-    auto key = keySeq.GetSimpleKeys();
+    auto key = keySeq.getSimpleKeys();
     if (key.size() > 0) {
         data.key = key[0];
     } else {
         qWarning() << "Invalid hotkey";
         return data;
     }
-
     // Key conversion
-    // Qt's F keys need conversion
-    if (data.key >= Qt::Key_F1 && data.key <= Qt::Key_F35) {
+    // Misc Keys
+    if (KEY_MAP.find(key[0]) != KEY_MAP.end()) {
+        data.key = KEY_MAP[key[0]];
+    } else if (data.key >= Qt::Key_F1 && data.key <= Qt::Key_F35) { // Qt's F keys need conversion
         const size_t DIFF = Qt::Key_F1 - XK_F1;
         data.key -= DIFF;
     } else if (data.key >= Qt::Key_Space && data.key <= Qt::Key_QuoteLeft) {
@@ -158,7 +183,7 @@ inline UKeyData QtKeyToLinux(const UKeySequence &keySeq)
     }
 
     // Modifiers conversion
-    auto mods = keySeq.GetModifiers();
+    auto mods = keySeq.getModifiers();
 
     for (auto i : mods) {
         if (i == Qt::Key_Shift)
