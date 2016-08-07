@@ -137,7 +137,7 @@ inline UKeyData QtKeyToLinux(const UKeySequence &keySeq)
 {
     UKeyData data = {0, 0};
 
-    auto key = keySeq.GetSimpleKeys();
+    auto key = keySeq.getSimpleKeys();
     if (key.size() > 0) {
         data.key = key[0];
     } else {
@@ -158,7 +158,7 @@ inline UKeyData QtKeyToLinux(const UKeySequence &keySeq)
     }
 
     // Modifiers conversion
-    auto mods = keySeq.GetModifiers();
+    auto mods = keySeq.getModifiers();
 
     for (auto i : mods) {
         if (i == Qt::Key_Shift)
