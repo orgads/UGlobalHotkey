@@ -1,6 +1,6 @@
 #include "ukeysequence.h"
 
-#include <QDebug>
+Q_LOGGING_CATEGORY(ughDebug, "uglobalhotkey", QtInfoMsg)
 
 UKeySequence::UKeySequence(QObject *parent)
     : QObject(parent)
@@ -79,12 +79,12 @@ void UKeySequence::addModifiers(Qt::KeyboardModifiers mod)
 void UKeySequence::addKey(const QString &key)
 {
     if (key.contains("+") || key.contains(",")) {
-        qWarning() << "Wrong key";
+        qCWarning(ughDebug) << "Wrong key";
         return;
     }
 
     QString mod = key.toLower();
-    qDebug() << "mod: " << mod;
+    qCDebug(ughDebug) << "mod: " << mod;
     if (mod == "alt") {
         addKey(Qt::Key_Alt);
         return;
@@ -103,7 +103,7 @@ void UKeySequence::addKey(const QString &key)
     }
     QKeySequence seq(key);
     if (seq.count() != 1) {
-        qWarning() << "Wrong key";
+        qCWarning(ughDebug) << "Wrong key";
         return;
     }
     addKey(static_cast<Qt::Key>(seq[0]));
@@ -119,7 +119,7 @@ void UKeySequence::addKey(Qt::Key key)
             return;
         }
     }
-    qDebug() << "Key added: " << key;
+    qCDebug(ughDebug) << "Key added: " << key;
     mKeys.push_back(key);
 }
 

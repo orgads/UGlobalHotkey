@@ -165,7 +165,7 @@ inline UKeyData QtKeyToLinux(const UKeySequence &keySeq)
     if (key.size() > 0) {
         data.key = key[0];
     } else {
-        qWarning() << "Invalid hotkey";
+        qCWarning(ughDebug) << "Invalid hotkey";
         return data;
     }
     // Key conversion
@@ -178,7 +178,7 @@ inline UKeyData QtKeyToLinux(const UKeySequence &keySeq)
     } else if (data.key >= Qt::Key_Space && data.key <= Qt::Key_QuoteLeft) {
         // conversion is not necessary, if the value in the range Qt::Key_Space - Qt::Key_QuoteLeft
     } else {
-        qWarning() << "Invalid hotkey: key conversion is not defined";
+        qCWarning(ughDebug) << "Invalid hotkey: key conversion is not defined";
         return data;
     }
 
@@ -280,7 +280,7 @@ inline UKeyData QtKeyToMac(const UKeySequence &keySeq)
     if (key.size() == 1 && KEY_MAP.find(key[0]) != KEY_MAP.end()) {
         data.key = KEY_MAP[key[0]];
     } else {
-        qWarning() << "Invalid hotkey";
+        qCWarning(ughDebug) << "Invalid hotkey";
         return data;
     }
 

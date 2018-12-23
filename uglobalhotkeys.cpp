@@ -10,8 +10,6 @@
 #include "hotkeymap.h"
 #include "uglobalhotkeys.h"
 
-#include <QDebug>
-
 UGlobalHotkeys::UGlobalHotkeys(QWidget *parent)
     : QWidget(parent)
 {
@@ -208,7 +206,7 @@ void UGlobalHotkeys::regLinuxHotkey(const UKeySequence &keySeq, size_t id)
     xcb_keycode_t *keyC = xcb_key_symbols_get_keycode(X11KeySymbs, keyData.key);
 
     if (keyC == nullptr) {
-        qWarning() << "Cannot find symbol";
+        qCWarning(ughDebug) << "Cannot find symbol";
         return;
     }
 

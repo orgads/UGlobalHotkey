@@ -1,12 +1,15 @@
 #pragma once
 
 #include <QObject>
+#include <QLoggingCategory>
 #include <QString>
 #include <QVector>
 #include <QStringList>
 #include <QKeyEvent>
 
 #include "uglobal.h"
+
+Q_DECLARE_LOGGING_CATEGORY(ughDebug)
 
 class UGLOBALHOTKEY_EXPORT UKeySequence : public QObject
 {
