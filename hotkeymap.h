@@ -131,8 +131,8 @@ inline size_t QtKeyToWin(Qt::Key key)
 #include "X11/keysym.h"
 
 struct UKeyData {
-    int key;
-    int mods;
+    xcb_keysym_t key;
+    uint16_t mods;
 };
 
 static std::unordered_map<uint32_t, uint32_t> KEY_MAP = {

@@ -19,7 +19,7 @@ UGlobalHotkeys::UGlobalHotkeys(QWidget *parent)
     qApp->installNativeEventFilter(this);
     QWindow wndw;
     void *v = qApp->platformNativeInterface()->nativeResourceForWindow("connection", &wndw);
-    X11Connection = (xcb_connection_t *)v;
+    X11Connection = static_cast<xcb_connection_t *>(v);
     X11Wid = xcb_setup_roots_iterator(xcb_get_setup(X11Connection)).data->root;
     X11KeySymbs = xcb_key_symbols_alloc(X11Connection);
 #endif
@@ -188,8 +188,8 @@ bool UGlobalHotkeys::nativeEventFilter(const QByteArray &eventType, void *messag
 bool UGlobalHotkeys::linuxEvent(xcb_generic_event_t *message)
 {
     if ((message->response_type & ~0x80) == XCB_KEY_PRESS) {
-        xcb_key_press_event_t *ev = (xcb_key_press_event_t *)message;
-        auto ind = Registered.key({ev->detail, (ev->state & ~XCB_MOD_MASK_2)});
+        xcb_key_press_event_t *ev = reinterpret_cast<xcb_key_press_event_t *>(message);
+        auto ind = Registered.key({ev->detail, uint16_t(ev->state & ~XCB_MOD_MASK_2)});
 
         if (ind == 0) // this is not hotkeys
             return false;
@@ -207,7 +207,7 @@ void UGlobalHotkeys::regLinuxHotkey(const UKeySequence &keySeq, size_t id)
     
     xcb_keycode_t *keyC = xcb_key_symbols_get_keycode(X11KeySymbs, keyData.key);
 
-    if (keyC == XCB_NO_SYMBOL) { // 0x0
+    if (keyC == nullptr) {
         qWarning() << "Cannot find symbol";
         return;
     }

@@ -17,7 +17,7 @@
 #if defined(Q_OS_LINUX)
 struct UHotkeyData {
     xcb_keycode_t keyCode;
-    int mods;
+    uint16_t mods;
     bool operator ==(const UHotkeyData &data) const
     {
         return data.keyCode == this->keyCode && data.mods == this->mods;
@@ -33,7 +33,7 @@ class UGLOBALHOTKEY_EXPORT UGlobalHotkeys : public QWidget
     Q_OBJECT
 
 public:
-    explicit UGlobalHotkeys(QWidget *parent = 0);
+    explicit UGlobalHotkeys(QWidget *parent = nullptr);
     bool registerHotkey(const QString &keySeq, size_t id = 1);
     bool registerHotkey(const UKeySequence &keySeq, size_t id = 1);
     void unregisterHotkey(size_t id = 1);
